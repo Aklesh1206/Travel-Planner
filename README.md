@@ -1,84 +1,88 @@
-# 🏛️ Walk Through History — AI Travel Planner
+# 🏛️ Walk Through History — AI Heritage Travel Planner
 
 <div align="center">
 
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=for-the-badge&logo=python&logoColor=white)
-![Tkinter](https://img.shields.io/badge/Tkinter-GUI-orange?style=for-the-badge)
-![ReportLab](https://img.shields.io/badge/ReportLab-PDF-red?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+![Python](https://img.shields.io/badge/Python-3.8%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Tkinter](https://img.shields.io/badge/Tkinter-GUI-FF6F00?style=for-the-badge&logo=python&logoColor=white)
+![ReportLab](https://img.shields.io/badge/ReportLab-PDF%20Export-CC0000?style=for-the-badge)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)
+![Stars](https://img.shields.io/github/stars/Aklesh1206/Travel-Planner?style=for-the-badge&color=gold)
 
-**A beautifully designed desktop travel planner for India's heritage destinations.**  
-Generate personalised day-by-day itineraries, export to PDF, and share with one click.
+<br/>
 
-[Features](#-features) • [Demo](#-demo) • [Installation](#-installation) • [Usage](#-usage) • [Project Structure](#-project-structure) • [Contributing](#-contributing)
+> **A fully offline Python desktop app that generates personalised day-by-day heritage travel itineraries for India — with PDF export and HTML share in one click.**
+
+<br/>
+
+[🚀 Getting Started](#-getting-started) &nbsp;•&nbsp;
+[✨ Features](#-features) &nbsp;•&nbsp;
+[🗺️ Destinations](#️-destinations) &nbsp;•&nbsp;
+[📸 Screenshots](#-screenshots) &nbsp;•&nbsp;
+[🛠️ Tech Stack](#️-tech-stack) &nbsp;•&nbsp;
+[📁 Project Structure](#-project-structure) &nbsp;•&nbsp;
+[🤝 Contributing](#-contributing)
 
 </div>
 
 ---
 
-## 📸 Demo
+## 📸 Screenshots
 
-> Generate a complete heritage itinerary for any city in India in seconds.
+<div align="center">
 
-| Form Panel | Generated Itinerary | PDF Export |
-|---|---|---|
-| Select destination, budget, duration & interests | Day-by-day collapsible itinerary cards | Styled A4 PDF with gold theme |
+| Planning Form | Generated Itinerary | PDF Export |
+|:---:|:---:|:---:|
+| Choose destination, budget, duration & interests | Day-by-day collapsible cards with time slots | Styled A4 PDF with gold heritage theme |
+
+</div>
 
 ---
 
 ## ✨ Features
 
-- 🗺️ **19 Heritage Destinations** — Covers major cities across North, South, East, West & Central India including Agra, Delhi, Jaipur, Hampi, Varanasi and more
-- 🤖 **AI-Style Itinerary Generation** — Animated loading sequence crafts a structured morning / afternoon / evening itinerary for each day
-- 📅 **Flexible Duration** — Plans for 2, 3, 5, 7, or 10-day trips
-- 💰 **Budget Tiers** — Budget, Mid-range, and Luxury options with per-day cost estimates
-- 🎯 **Travel Styles** — Relaxed, Packed, Focused, or Flexible pacing
-- 🏷️ **Interest Tags** — Filter experiences by History, Architecture, Food, Photography, Culture, Adventure and more
-- 📄 **PDF Export** — Download a fully styled A4 PDF itinerary powered by ReportLab
-- 🔗 **HTML Share Link** — Generate a standalone shareable HTML page that opens in your browser
-- 🎨 **Dark Gold UI Theme** — Elegant heritage-inspired dark theme built entirely with Tkinter — no web framework needed
-- 📱 **Collapsible Day Cards** — Clean accordion-style day-by-day breakdown with time slots and activity tags
+- 🗺️ **19 Heritage Destinations** across North, South, East, West & Central India
+- 🤖 **AI-style Itinerary Generation** with animated loading sequence
+- 🌅 **Morning / Afternoon / Evening** time slots for every day
+- 📅 **Flexible Trip Duration** — 2, 3, 5, 7 or 10 days
+- 💰 **Three Budget Tiers** — Budget, Mid-range, and Luxury with cost estimates
+- 🎯 **Travel Styles** — Relaxed, Packed, Focused, or Flexible
+- 🏷️ **Interest Tags** — History, Architecture, Food, Photography, Culture, Adventure & more
+- 👥 **Traveller Types** — Solo, Couple, Family, or Group
+- 📄 **Real PDF Export** — Download a fully styled A4 PDF powered by ReportLab
+- 🔗 **HTML Share Link** — Generate a standalone shareable web page, opens in browser
+- 🎨 **Dark Gold Heritage UI** — Elegant Tkinter theme, no web framework needed
+- 🗂️ **Collapsible Day Cards** — Accordion-style breakdown with tags per activity
 
 ---
 
-## 🗺️ Supported Destinations
+## 🗺️ Destinations
 
 | Region | Cities |
-|---|---|
-| **North India** | Agra, Delhi, Varanasi, Lucknow, Amritsar |
-| **Rajasthan** | Jaipur, Jodhpur, Udaipur, Jaisalmer |
-| **South India** | Hampi, Thanjavur, Madurai, Mysore |
-| **West India** | Mumbai, Ajanta & Ellora |
-| **East & Central** | Khajuraho, Sanchi, Bhubaneswar |
+|:---|:---|
+| 🏔️ **North India** | Agra, Delhi, Varanasi, Lucknow, Amritsar |
+| 🌸 **Rajasthan** | Jaipur, Jodhpur, Udaipur, Jaisalmer |
+| 🌴 **South India** | Hampi, Thanjavur, Madurai, Mysore |
+| 🌊 **West India** | Mumbai, Ajanta & Ellora |
+| 🏛️ **East & Central India** | Khajuraho, Sanchi, Bhubaneswar |
+
+> Full itinerary data is included for **Agra, Delhi, Jaipur, Hampi and Varanasi**.  
+> All other destinations use a smart default heritage template.
 
 ---
 
-## 🛠️ Tech Stack
-
-| Technology | Purpose |
-|---|---|
-| **Python 3.8+** | Core application language |
-| **Tkinter** | Desktop GUI framework (built-in) |
-| **ttk (Themed Tkinter)** | Styled dropdown / combobox widgets |
-| **ReportLab** | PDF generation with custom styling |
-| **threading** | Non-blocking loading animation |
-| **webbrowser** | Open HTML share page in default browser |
-| **tempfile** | Temporary HTML file storage for sharing |
-
----
-
-## 📦 Installation
+## 🚀 Getting Started
 
 ### Prerequisites
-- Python 3.8 or higher
+
+- Python **3.8 or higher**
 - pip
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/walk-through-history.git
-cd walk-through-history
+git clone https://github.com/Aklesh1206/Travel-Planner.git
+cd Travel-Planner
 ```
 
 ### 2. Install dependencies
@@ -87,8 +91,11 @@ cd walk-through-history
 pip install reportlab
 ```
 
-> **Note:** Tkinter comes pre-installed with Python on Windows and macOS.  
-> On Linux, install it with: `sudo apt-get install python3-tk`
+> ℹ️ **Tkinter** is built into Python on Windows and macOS.  
+> On Linux, install it separately:
+> ```bash
+> sudo apt-get install python3-tk
+> ```
 
 ### 3. Run the app
 
@@ -98,31 +105,113 @@ python travel_planner.py
 
 ---
 
-## 🚀 Usage
+## 🎮 How to Use
 
-### Generating an Itinerary
+### Step-by-step
 
-1. **Select a Destination** — Choose from 19 heritage cities in the dropdown
-2. **Set Duration** — Pick 2, 3, 5, 7, or 10 days
-3. **Choose Budget** — Budget / Mid / Luxury
-4. **Pick Interests** — Toggle tags like History, Food, Photography etc.
-5. **Select Travel Style** — Relaxed, Packed, Focused, or Flexible
-6. **Choose Travellers** — Solo, Couple, Family, or Group
-7. **Click "Generate AI Itinerary"** — Your plan appears on the right panel
+| Step | Action |
+|:---:|:---|
+| 1 | Select a **destination** from the dropdown |
+| 2 | Choose **trip duration** — 2, 3, 5, 7, or 10 days |
+| 3 | Pick your **budget** — Budget / Mid / Luxury |
+| 4 | Toggle your **interests** — History, Food, Photography etc. |
+| 5 | Choose a **travel style** — Relaxed, Packed, Focused, Flexible |
+| 6 | Select **traveller type** — Solo, Couple, Family, Group |
+| 7 | Click **"Generate AI Itinerary"** and see your plan |
 
-### Exporting & Sharing
+### Export & Share
 
-| Action | How |
-|---|---|
-| **Download PDF** | Click "Download PDF" → choose save location → opens automatically |
-| **Share Link** | Click "Share Link" → HTML opens in browser → copy file path to share |
-| **Save** | Click "Save" to bookmark (connect a database to persist) |
+| Button | What it does |
+|:---|:---|
+| ⬇️ **Download PDF** | Opens a Save dialog → generates a styled A4 PDF → option to open immediately |
+| 🔗 **Share Link** | Generates a standalone HTML file → opens in browser → copy path to share |
+| 🔖 **Save** | Bookmarks the itinerary (extend with a database to persist) |
 
-### VS Code Users
-If you see Pylance warnings about `reportlab` imports, these are **not errors** — just missing type stubs. The app runs perfectly. To suppress:
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Role |
+|:---|:---|
+| **Python 3.8+** | Core application language |
+| **Tkinter** | Native desktop GUI (no install needed) |
+| **ttk.Combobox** | Styled dropdown for destination selection |
+| **ReportLab** | PDF generation with custom A4 layout and gold styling |
+| **threading** | Background loading animation without freezing the UI |
+| **webbrowser** | Opens the HTML share page in the default browser |
+| **tempfile** | Creates the temporary HTML share file |
+| **filedialog** | Native Save As dialog for PDF export |
+
+---
+
+## 📁 Project Structure
+
+```
+Travel-Planner/
+│
+├── travel_planner.py       # Entire application — single file
+├── requirements.txt        # Python dependencies
+└── README.md               # Project documentation
+```
+
+### Inside `travel_planner.py`
+
+```
+travel_planner.py
+│
+├── 🎨  COLOUR PALETTE          — UI hex constants (dark gold theme)
+├── 🗃️  DESTINATION_DATA        — Full day/slot data for 5 cities
+├── 📋  DESTINATIONS_LIST       — All 19 cities for the dropdown
+│
+├── 📄  generate_pdf()          — Builds styled A4 PDF with ReportLab
+├── 🌐  generate_share_html()   — Builds standalone HTML share page
+│
+└── 🖥️  TravelPlannerApp        — Main Tkinter application class
+    ├── _build_hero()           — Title & badge section
+    ├── _build_form()           — Left panel: all form controls
+    ├── _build_empty_state()    — Placeholder before generation
+    ├── _show_loading()         — Animated loading screen
+    ├── _on_generate()          — Triggers itinerary build in thread
+    ├── _build_itinerary()      — Right panel: day cards & header
+    ├── _build_slot()           — Morning / Afternoon / Evening slot
+    ├── _download_pdf()         — PDF export handler
+    └── _share_link()           — HTML share handler + dialog
+```
+
+---
+
+## 📄 PDF Output
+
+The exported PDF includes:
+
+- **Brand header** — "Walk Through History" with gold divider
+- **Journey title** — City name and tagline
+- **Trip badges** — Days count, Budget tier, Travel pace
+- **Stats bar** — Total days · Experiences · Monuments · Est. cost/day
+- **Day cards** — Each day with Morning (7 AM), Afternoon (1 PM), Evening (6 PM)
+- **Activity details** — Name, description, and interest tags
+- **Footer** — Auto-generated timestamp
+
+---
+
+## 🌐 HTML Share Page
+
+The Share Link feature generates a **fully self-contained `.html` file**:
+
+- Same dark gold visual theme as the desktop app
+- Responsive — works on mobile and desktop browsers
+- **100% offline** — all data embedded, no internet needed
+- Can be emailed, uploaded, or shared as a file link
+
+---
+
+## ⚙️ VS Code Users
+
+If you see Pylance warnings like `"reportlab could not be resolved from source"` — **ignore them**. These are cosmetic type-checking warnings, not errors. The package is installed and the app runs fine.
+
+To suppress them permanently, add to `.vscode/settings.json`:
 
 ```json
-// .vscode/settings.json
 {
   "python.analysis.diagnosticSeverityOverrides": {
     "reportMissingModuleSource": "none"
@@ -132,64 +221,7 @@ If you see Pylance warnings about `reportlab` imports, these are **not errors** 
 
 ---
 
-## 📁 Project Structure
-
-```
-walk-through-history/
-│
-├── travel_planner.py          # Main application (single file)
-│
-├── README.md                  # Project documentation
-│
-└── requirements.txt           # Python dependencies
-```
-
-### Key Sections Inside `travel_planner.py`
-
-```
-travel_planner.py
-│
-├── COLOUR PALETTE             # UI colour constants
-├── DESTINATION_DATA           # Full itinerary data for all cities
-├── DESTINATIONS_LIST          # Dropdown city list
-├── generate_pdf()             # ReportLab PDF builder
-├── generate_share_html()      # Standalone HTML page generator
-│
-└── TravelPlannerApp (class)
-    ├── _build_hero()          # Title / badge section
-    ├── _build_form()          # Left panel: all input controls
-    ├── _build_itinerary()     # Right panel: generated day cards
-    ├── _build_slot()          # Individual morning/afternoon/evening slot
-    ├── _download_pdf()        # PDF export handler
-    └── _share_link()          # HTML share handler
-```
-
----
-
-## 📄 PDF Output
-
-The exported PDF includes:
-
-- **Header** — City name, tagline, and trip badges (days / budget / pace)
-- **Stats Bar** — Total days, experiences, monuments, and estimated daily cost
-- **Day Cards** — Each day with Morning (7 AM), Afternoon (1 PM), Evening (6 PM) slots
-- **Activity Details** — Name, description, and interest tags per slot
-- **Footer** — Generation timestamp
-
----
-
-## 🌐 HTML Share Page
-
-The share feature generates a **fully self-contained HTML file** with:
-
-- The same dark gold visual theme as the app
-- Responsive layout for mobile and desktop browsers
-- All itinerary data embedded — no internet connection required
-- Works offline and can be emailed or uploaded anywhere
-
----
-
-## 🔧 requirements.txt
+## 📦 requirements.txt
 
 ```
 reportlab>=4.0.0
@@ -199,13 +231,16 @@ reportlab>=4.0.0
 
 ## 🤝 Contributing
 
-Contributions are welcome! Here are some ideas to extend the project:
+Contributions, issues and feature requests are welcome!
 
-- [ ] Add real AI API integration (OpenAI / Claude) for dynamic itinerary generation
-- [ ] Connect a SQLite database for saving/loading itineraries
-- [ ] Add map integration showing monument locations
-- [ ] Include hotel and restaurant recommendations per budget tier
-- [ ] Add more destinations (international cities)
-- [ ] Dark/light theme toggle
-- [ ] Export to Google Calendar format
+### Ideas for future improvements
+
+- [ ] Real AI API integration (OpenAI / Gemini / Claude) for dynamic generation
+- [ ] SQLite database to save and reload itineraries
+- [ ] Google Maps integration showing monument locations
+- [ ] Hotel & restaurant recommendations per budget tier
+- [ ] International heritage destinations
+- [ ] Light / dark theme toggle
+- [ ] Export to `.ics` Google Calendar format
+- [ ] Multi-language support
 
