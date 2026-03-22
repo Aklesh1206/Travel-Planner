@@ -6,8 +6,6 @@
 ![Tkinter](https://img.shields.io/badge/Tkinter-GUI-FF6F00?style=for-the-badge&logo=python&logoColor=white)
 ![ReportLab](https://img.shields.io/badge/ReportLab-PDF%20Export-CC0000?style=for-the-badge)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)
-![Stars](https://img.shields.io/github/stars/Aklesh1206/Travel-Planner?style=for-the-badge&color=gold)
 
 <br/>
 
@@ -21,7 +19,6 @@
 [📸 Screenshots](#-screenshots) &nbsp;•&nbsp;
 [🛠️ Tech Stack](#️-tech-stack) &nbsp;•&nbsp;
 [📁 Project Structure](#-project-structure) &nbsp;•&nbsp;
-[🤝 Contributing](#-contributing)
 
 </div>
 
