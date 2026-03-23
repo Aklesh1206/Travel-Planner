@@ -1,4 +1,4 @@
-# 🏛️ Walk Through History — AI Heritage Travel Planner
+# 🏛️ AI Travel Planner
 
 <div align="center">
 
@@ -146,15 +146,15 @@ python travel_planner.py
 ```
 Travel-Planner/
 │
-├── travel_planner.py       # Entire application — single file
+├── travel.py       # Entire application — single file
 ├── requirements.txt        # Python dependencies
 └── README.md               # Project documentation
 ```
 
-### Inside `travel_planner.py`
+### Inside `travel.py`
 
 ```
-travel_planner.py
+travel.py
 │
 ├── 🎨  COLOUR PALETTE          — UI hex constants (dark gold theme)
 ├── 🗃️  DESTINATION_DATA        — Full day/slot data for 5 cities
@@ -181,7 +181,7 @@ travel_planner.py
 
 The exported PDF includes:
 
-- **Brand header** — "Walk Through History" with gold divider
+- **Brand header** — "" with gold divider
 - **Journey title** — City name and tagline
 - **Trip badges** — Days count, Budget tier, Travel pace
 - **Stats bar** — Total days · Experiences · Monuments · Est. cost/day
