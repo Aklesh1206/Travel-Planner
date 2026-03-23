@@ -48,7 +48,6 @@
 - 👥 **Traveller Types** — Solo, Couple, Family, or Group
 - 📄 **Real PDF Export** — Download a fully styled A4 PDF powered by ReportLab
 - 🔗 **HTML Share Link** — Generate a standalone shareable web page, opens in browser
-- 🎨 **Dark Gold Heritage UI** — Elegant Tkinter theme, no web framework needed
 - 🗂️ **Collapsible Day Cards** — Accordion-style breakdown with tags per activity
 
 ---
@@ -97,7 +96,7 @@ pip install reportlab
 ### 3. Run the app
 
 ```bash
-python travel_planner.py
+python travel.py
 ```
 
 ---
