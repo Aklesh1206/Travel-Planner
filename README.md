@@ -11,6 +11,7 @@
 
 > **A fully offline Python desktop app that generates personalised day-by-day heritage travel itineraries for India — with PDF export and HTML share in one click.**
 ---
+<img width="1919" height="1121" alt="image" src="https://github.com/user-attachments/assets/b74ee12a-2710-4fd1-9798-8f5269c7f8d8" />
 
 ## 📸 Screenshots
 
@@ -22,23 +23,23 @@
 
 ---
 
-## ✨ Features
+##  Features
 
-- 🗺️ **19 Heritage Destinations** across North, South, East, West & Central India
-- 🤖 **AI-style Itinerary Generation** with animated loading sequence
-- 🌅 **Morning / Afternoon / Evening** time slots for every day
-- 📅 **Flexible Trip Duration** — 2, 3, 5, 7 or 10 days
-- 💰 **Three Budget Tiers** — Budget, Mid-range, and Luxury with cost estimates
-- 🎯 **Travel Styles** — Relaxed, Packed, Focused, or Flexible
-- 🏷️ **Interest Tags** — History, Architecture, Food, Photography, Culture, Adventure & more
-- 👥 **Traveller Types** — Solo, Couple, Family, or Group
-- 📄 **Real PDF Export** — Download a fully styled A4 PDF powered by ReportLab
-- 🔗 **HTML Share Link** — Generate a standalone shareable web page, opens in browser
-- 🗂️ **Collapsible Day Cards** — Accordion-style breakdown with tags per activity
+-  **19 Heritage Destinations** across North, South, East, West & Central India
+-  **AI-style Itinerary Generation** with animated loading sequence
+-  **Morning / Afternoon / Evening** time slots for every day
+-  **Flexible Trip Duration** — 2, 3, 5, 7 or 10 days
+-  **Three Budget Tiers** — Budget, Mid-range, and Luxury with cost estimates
+-  **Travel Styles** — Relaxed, Packed, Focused, or Flexible
+-  **Interest Tags** — History, Architecture, Food, Photography, Culture, Adventure & more
+-  **Traveller Types** — Solo, Couple, Family, or Group
+-  **Real PDF Export** — Download a fully styled A4 PDF powered by ReportLab
+-  **HTML Share Link** — Generate a standalone shareable web page, opens in browser
+-  **Collapsible Day Cards** — Accordion-style breakdown with tags per activity
 
 ---
 
-## 🗺️ Destinations
+##  Destinations
 
 | Region | Cities |
 |:---|:---|
@@ -53,7 +54,7 @@
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
@@ -73,7 +74,7 @@ cd Travel-Planner
 pip install reportlab
 ```
 
-> ℹ️ **Tkinter** is built into Python on Windows and macOS.  
+>  **Tkinter** is built into Python on Windows and macOS.  
 > On Linux, install it separately:
 > ```bash
 > sudo apt-get install python3-tk
@@ -87,7 +88,7 @@ python travel.py
 
 ---
 
-## 🎮 How to Use
+##  How to Use
 
 ### Step-by-step
 
@@ -101,17 +102,23 @@ python travel.py
 | 6 | Select **traveller type** — Solo, Couple, Family, Group |
 | 7 | Click **"Generate AI Itinerary"** and see your plan |
 
+<img width="702" height="743" alt="image" src="https://github.com/user-attachments/assets/d8b23666-a486-44f3-a2b1-8e8195a6d06e" />
+<img width="676" height="240" alt="image" src="https://github.com/user-attachments/assets/524c11e7-c4b0-4408-86f5-79218eab6b6d" />
+
+
 ### Export & Share
 
 | Button | What it does |
 |:---|:---|
-| ⬇️ **Download PDF** | Opens a Save dialog → generates a styled A4 PDF → option to open immediately |
-| 🔗 **Share Link** | Generates a standalone HTML file → opens in browser → copy path to share |
-| 🔖 **Save** | Bookmarks the itinerary (extend with a database to persist) |
+|  **Download PDF** | Opens a Save dialog → generates a styled A4 PDF → option to open immediately |
+|  **Share Link** | Generates a standalone HTML file → opens in browser → copy path to share |
+|  **Save** | Bookmarks the itinerary (extend with a database to persist) |
+
+<img width="575" height="99" alt="image" src="https://github.com/user-attachments/assets/254e2894-a3f9-475e-8545-8d577c76feed" />
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Technology | Role |
 |:---|:---|
@@ -123,6 +130,8 @@ python travel.py
 | **webbrowser** | Opens the HTML share page in the default browser |
 | **tempfile** | Creates the temporary HTML share file |
 | **filedialog** | Native Save As dialog for PDF export |
+
+<img width="956" height="403" alt="image" src="https://github.com/user-attachments/assets/e43f67f6-c850-4ff2-9c9f-42bc588abb80" />
 
 ---
 
@@ -173,6 +182,8 @@ The exported PDF includes:
 - **Day cards** — Each day with Morning (7 AM), Afternoon (1 PM), Evening (6 PM)
 - **Activity details** — Name, description, and interest tags
 - **Footer** — Auto-generated timestamp
+- 
+<img width="805" height="927" alt="image" src="https://github.com/user-attachments/assets/3765beb6-4305-4d29-a5e4-d2ab0fa100d6" />
 
 ---
 
@@ -184,6 +195,8 @@ The Share Link feature generates a **fully self-contained `.html` file**:
 - Responsive — works on mobile and desktop browsers
 - **100% offline** — all data embedded, no internet needed
 - Can be emailed, uploaded, or shared as a file link
+
+<img width="940" height="454" alt="image" src="https://github.com/user-attachments/assets/5f988363-378d-457b-8071-f7e95cff77f5" />
 
 ---
 
@@ -210,10 +223,6 @@ reportlab>=4.0.0
 ```
 
 ---
-
-## 🤝 Contributing
-
-Contributions, issues and feature requests are welcome!
 
 ### Ideas for future improvements
 
