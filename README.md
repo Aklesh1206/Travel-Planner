@@ -1,4 +1,4 @@
-# 🏛️ AI Travel Planner
+#  AI Travel Planner
 
 <div align="center">
 
@@ -10,23 +10,9 @@
 <br/>
 
 > **A fully offline Python desktop app that generates personalised day-by-day heritage travel itineraries for India — with PDF export and HTML share in one click.**
-
-<br/>
-
-[🚀 Getting Started](#-getting-started) &nbsp;•&nbsp;
-[✨ Features](#-features) &nbsp;•&nbsp;
-[🗺️ Destinations](#️-destinations) &nbsp;•&nbsp;
-[📸 Screenshots](#-screenshots) &nbsp;•&nbsp;
-[🛠️ Tech Stack](#️-tech-stack) &nbsp;•&nbsp;
-[📁 Project Structure](#-project-structure) &nbsp;•&nbsp;
-
-</div>
-
 ---
 
 ## 📸 Screenshots
-
-<div align="center">
 
 | Planning Form | Generated Itinerary | PDF Export |
 |:---:|:---:|:---:|
