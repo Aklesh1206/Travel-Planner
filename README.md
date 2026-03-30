@@ -103,8 +103,8 @@ python travel.py
 | 6 | Select **traveller type** — Solo, Couple, Family, Group |
 | 7 | Click **"Generate AI Itinerary"** and see your plan |
 
-<img width="702" height="743" alt="image" src="https://github.com/user-attachments/assets/d8b23666-a486-44f3-a2b1-8e8195a6d06e" />
-<img width="676" height="240" alt="image" src="https://github.com/user-attachments/assets/524c11e7-c4b0-4408-86f5-79218eab6b6d" />
+<img width="718" height="729" alt="image" src="https://github.com/user-attachments/assets/a0e8323c-23ac-427a-ac66-e8ee59560761" />
+<img width="698" height="338" alt="image" src="https://github.com/user-attachments/assets/3165b116-a469-40d9-b1c0-9401a3b1dc41" />
 
 
 ### Export & Share
