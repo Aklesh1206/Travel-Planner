@@ -130,7 +130,9 @@ python travel.py
 | **webbrowser** | Opens the HTML share page in the default browser |
 | **tempfile** | Creates the temporary HTML share file |
 | **filedialog** | Native Save As dialog for PDF export |
-
+  **Recommendation Engine (KNN):** Implements a K-Nearest Neighbors model with Cosine Similarity. It maps a 10-dimensional user interest vector (History, Nature, Food, etc.) against a city-interest matrix to find the mathematically closest destination match.
+- **Budget Predictor (Linear Regression):** Uses a Supervised Learning model trained on seasonal datasets. It predicts daily expenses by analyzing the relationship between trip duration, month of travel, and selected luxury tier.
+- **NLP Intent Extraction:** A custom rule-based Natural Language Processing module. It uses regex tokenization and lexicon mapping to clean free-text input and extract specific city entities and travel intents.
 <img width="956" height="403" alt="image" src="https://github.com/user-attachments/assets/e43f67f6-c850-4ff2-9c9f-42bc588abb80" />
 
 ---
