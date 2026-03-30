@@ -1,10 +1,17 @@
-
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import threading, time, os, webbrowser, tempfile
 from datetime import datetime, timedelta
 
-# ── reportlab imports 
+# ── ML / NLP IMPORTS ─────────────────────────────────────────────────────────
+import numpy as np
+import pandas as pd
+from sklearn.neighbors import NearestNeighbors
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.linear_model import LinearRegression
+import re
+
+# ── reportlab imports ────────────────────────────────────────────────────────
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.units import mm
@@ -13,7 +20,7 @@ from reportlab.lib.enums import TA_LEFT, TA_CENTER
 from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer,
                                  Table, TableStyle, HRFlowable, KeepTogether)
 
-# ── COLOUR PALETTE 
+# ── COLOUR PALETTE ───────────────────────────────────────────────────────────
 BG      = "#0d1117"
 BG2     = "#13181f"
 BG3     = "#1a2130"
@@ -36,7 +43,201 @@ PDF_TEXT2 = colors.HexColor("#9a9080")
 PDF_MORN  = colors.HexColor("#fcc419")
 PDF_EVE   = colors.HexColor("#818cf8")
 
-# ── DESTINATION DATA 
+# ════════════════════════════════════════════════════════════════════════════
+#  ML ENGINE 1 — KNN RECOMMENDATION SYSTEM
+#  Maps each city to a feature vector over 10 interest dimensions.
+#  When the user clicks Generate, their interest selections are fed into
+#  a trained KNN model (k=3) to find the closest matching cities.
+#  The chosen city from the dropdown is RERANKED: if it appears in the
+#  top-3 KNN results it is confirmed; otherwise the best KNN match is
+#  suggested to the user via a non-blocking info panel.
+# ════════════════════════════════════════════════════════════════════════════
+
+# Feature order matches INTERESTS list exactly:
+# History, Architecture, Religion, Nature, Food,
+# Photography, Culture, Adventure, Shopping, Nightlife
+CITY_INTEREST_MATRIX = {
+    "agra":       [5, 5, 3, 2, 3, 5, 4, 1, 3, 1],
+    "delhi":      [5, 4, 4, 2, 5, 3, 5, 2, 5, 4],
+    "varanasi":   [4, 3, 5, 3, 4, 5, 5, 2, 3, 2],
+    "lucknow":    [4, 4, 3, 2, 5, 3, 5, 1, 4, 3],
+    "amritsar":   [4, 4, 5, 2, 4, 4, 5, 2, 3, 1],
+    "jaipur":     [4, 5, 3, 2, 4, 4, 5, 2, 5, 3],
+    "jodhpur":    [4, 5, 3, 3, 3, 5, 4, 3, 4, 2],
+    "udaipur":    [3, 5, 3, 5, 4, 5, 4, 3, 4, 3],
+    "jaisalmer":  [4, 5, 2, 4, 3, 5, 3, 5, 3, 1],
+    "hampi":      [5, 5, 4, 4, 2, 5, 4, 3, 2, 1],
+    "thanjavur":  [5, 5, 5, 2, 3, 4, 5, 1, 2, 1],
+    "madurai":    [4, 4, 5, 2, 4, 4, 5, 1, 3, 2],
+    "mysore":     [4, 5, 4, 3, 4, 4, 5, 2, 4, 2],
+    "mumbai":     [3, 4, 3, 3, 5, 4, 5, 3, 5, 5],
+    "ajanta":     [5, 5, 4, 3, 2, 5, 4, 2, 1, 1],
+    "khajuraho":  [5, 5, 4, 3, 2, 5, 4, 1, 2, 1],
+    "sanchi":     [5, 4, 5, 3, 1, 4, 4, 1, 1, 1],
+    "bhubaneswar":[5, 5, 5, 3, 3, 4, 5, 2, 2, 1],
+}
+
+def build_knn_model():
+    """Build and return (knn_model, scaler, city_keys) trained on CITY_INTEREST_MATRIX."""
+    keys   = list(CITY_INTEREST_MATRIX.keys())
+    X      = np.array([CITY_INTEREST_MATRIX[k] for k in keys], dtype=float)
+    scaler = MinMaxScaler()
+    X_scaled = scaler.fit_transform(X)
+    knn = NearestNeighbors(n_neighbors=3, metric="cosine")
+    knn.fit(X_scaled)
+    return knn, scaler, keys
+
+# Train once at startup
+_KNN_MODEL, _KNN_SCALER, _KNN_KEYS = build_knn_model()
+
+def knn_recommend(interest_scores: dict, top_n: int = 3):
+    """
+    Given a dict {interest_name: 0/1 selected}, return top_n city keys
+    ranked by cosine similarity using KNN.
+    interest_scores keys must match INTERESTS order.
+    """
+    INTERESTS_ORDER = ["History","Architecture","Religion","Nature","Food",
+                       "Photography","Culture","Adventure","Shopping","Nightlife"]
+    vec = np.array([[interest_scores.get(i, 0) for i in INTERESTS_ORDER]], dtype=float)
+    vec_scaled = _KNN_SCALER.transform(vec)
+    distances, indices = _KNN_MODEL.kneighbors(vec_scaled, n_neighbors=top_n)
+    return [_KNN_KEYS[i] for i in indices[0]]
+
+
+# ════════════════════════════════════════════════════════════════════════════
+#  ML ENGINE 2 — NLP INTENT & ENTITY EXTRACTION
+#  Parses a free-text query typed by the user (optional field added below
+#  the dropdown — same form, no layout change) to:
+#    1. Extract CITY mentions (entity extraction via keyword matching +
+#       synonym dictionary).
+#    2. Extract INTEREST keywords (intent classification via token overlap
+#       with a domain lexicon).
+#  The extracted interests are fed into the KNN model to auto-select the
+#  best matching city and pre-tick the interest checkboxes.
+# ════════════════════════════════════════════════════════════════════════════
+
+# Synonym → canonical city key
+NLP_CITY_SYNONYMS = {
+    "agra": "agra", "taj mahal": "agra", "taj": "agra",
+    "delhi": "delhi", "new delhi": "delhi", "old delhi": "delhi",
+    "varanasi": "varanasi", "banaras": "varanasi", "benares": "varanasi", "kashi": "varanasi",
+    "lucknow": "lucknow", "nawabs": "lucknow",
+    "amritsar": "amritsar", "golden temple": "amritsar", "punjab": "amritsar",
+    "jaipur": "jaipur", "pink city": "jaipur",
+    "jodhpur": "jodhpur", "blue city": "jodhpur", "mehrangarh": "jodhpur",
+    "udaipur": "udaipur", "lake city": "udaipur",
+    "jaisalmer": "jaisalmer", "golden city": "jaisalmer", "desert": "jaisalmer",
+    "hampi": "hampi", "vijayanagara": "hampi",
+    "thanjavur": "thanjavur", "tanjore": "thanjavur",
+    "madurai": "madurai", "meenakshi": "madurai",
+    "mysore": "mysore", "mysuru": "mysore",
+    "mumbai": "mumbai", "bombay": "mumbai",
+    "ajanta": "ajanta", "ellora": "ajanta", "caves": "ajanta",
+    "khajuraho": "khajuraho",
+    "sanchi": "sanchi", "stupa": "sanchi",
+    "bhubaneswar": "bhubaneswar", "odisha": "bhubaneswar", "konark": "bhubaneswar",
+}
+
+# Word → interest name
+NLP_INTEREST_LEXICON = {
+    "history": "History", "historical": "History", "mughal": "History",
+    "ancient": "History", "medieval": "History", "empire": "History",
+    "architecture": "Architecture", "fort": "Architecture", "palace": "Architecture",
+    "temple": "Architecture", "monument": "Architecture", "heritage": "Architecture",
+    "religion": "Religion", "religious": "Religion", "pilgrimage": "Religion",
+    "sacred": "Religion", "spiritual": "Religion", "worship": "Religion",
+    "nature": "Nature", "wildlife": "Nature", "lake": "Nature",
+    "forest": "Nature", "garden": "Nature", "birds": "Nature",
+    "food": "Food", "cuisine": "Food", "eat": "Food", "spicy": "Food",
+    "restaurant": "Food", "street food": "Food", "biryani": "Food",
+    "photo": "Photography", "photography": "Photography", "sunrise": "Photography",
+    "sunset": "Photography", "camera": "Photography",
+    "culture": "Culture", "festival": "Culture", "dance": "Culture",
+    "music": "Culture", "art": "Culture", "craft": "Culture",
+    "adventure": "Adventure", "trek": "Adventure", "camel": "Adventure",
+    "safari": "Adventure", "desert": "Adventure", "hike": "Adventure",
+    "shopping": "Shopping", "bazaar": "Shopping", "market": "Shopping",
+    "handicraft": "Shopping", "souvenir": "Shopping",
+    "nightlife": "Nightlife", "night": "Nightlife", "club": "Nightlife",
+}
+
+def nlp_parse_query(text: str):
+    """
+    Returns (city_key_or_None, {interest: score}).
+    Uses regex tokenization + keyword matching (no external NLP dependency).
+    """
+    text_lower = text.lower()
+    # --- Entity Extraction: find city ---
+    detected_city = None
+    # Sort by length desc so "golden temple" matches before "temple"
+    for phrase in sorted(NLP_CITY_SYNONYMS, key=len, reverse=True):
+        if phrase in text_lower:
+            detected_city = NLP_CITY_SYNONYMS[phrase]
+            break
+
+    # --- Intent Classification: detect interests ---
+    tokens = set(re.findall(r"[a-z ]+", text_lower))
+    interests_found = {}
+    for phrase in sorted(NLP_INTEREST_LEXICON, key=len, reverse=True):
+        if phrase in text_lower:
+            interests_found[NLP_INTEREST_LEXICON[phrase]] = 1
+    return detected_city, interests_found
+
+
+# ════════════════════════════════════════════════════════════════════════════
+#  ML ENGINE 3 — LINEAR REGRESSION BUDGET PREDICTOR
+#  Trains a simple Linear Regression model on synthetic but realistic
+#  travel cost data (duration × month → daily budget in INR).
+#  Features:  [num_days, month_of_year (1-12)]
+#  Target:    estimated daily cost in INR (budget / mid / luxury tier)
+#  The model is queried inside _build_itinerary to display an ML-derived
+#  cost estimate alongside the static lookup value.
+# ════════════════════════════════════════════════════════════════════════════
+
+def _build_budget_training_data():
+    """
+    Synthetic dataset: 200 rows of (days, month, budget_tier, cost_per_day).
+    Costs reflect Indian domestic tourism patterns:
+      - Peak season: Oct–Feb (+20%)
+      - Off-peak: May–Aug (–15%)
+      - Longer trips: marginal daily cost decreases (bulk discount effect)
+    """
+    rng = np.random.default_rng(42)
+    rows = []
+    for _ in range(200):
+        days   = rng.choice([2, 3, 5, 7, 10])
+        month  = rng.integers(1, 13)
+        tier   = rng.choice(["budget", "mid", "luxury"])
+        base   = {"budget": 3200, "mid": 9500, "luxury": 26000}[tier]
+        seasonal = 1.20 if month in (10,11,12,1,2) else (0.85 if month in (5,6,7,8) else 1.0)
+        duration_factor = 1.0 - 0.015 * max(0, days - 2)   # slight discount for longer
+        noise  = rng.normal(0, base * 0.06)
+        cost   = base * seasonal * duration_factor + noise
+        rows.append([days, month, tier, max(cost, base * 0.5)])
+    return pd.DataFrame(rows, columns=["days","month","tier","cost"])
+
+_BUDGET_DF = _build_budget_training_data()
+
+def _train_budget_model(tier: str):
+    sub = _BUDGET_DF[_BUDGET_DF["tier"] == tier]
+    X   = sub[["days","month"]].values
+    y   = sub["cost"].values
+    m   = LinearRegression()
+    m.fit(X, y)
+    return m
+
+_LR_MODELS = {tier: _train_budget_model(tier) for tier in ("budget","mid","luxury")}
+
+def predict_budget(num_days: int, budget_tier: str) -> str:
+    """Return ML-predicted daily cost as formatted string (e.g. 'Rs.9,840')."""
+    month = datetime.now().month
+    model = _LR_MODELS.get(budget_tier, _LR_MODELS["mid"])
+    pred  = model.predict([[num_days, month]])[0]
+    pred  = max(pred, 500)
+    return f"Rs.{int(pred):,}"
+
+
+# ── DESTINATION DATA ─────────────────────────────────────────────────────────
 DESTINATION_DATA = {
     "agra": {
         "name": "Agra, Uttar Pradesh", "emoji": "Taj",
@@ -927,17 +1128,17 @@ DESTINATIONS_LIST = [
 ]
 
 LOADING_STEPS = [
-    "Analysing destination monuments...",
-    "Mapping heritage sites by era...",
-    "Optimising travel distances...",
-    "Crafting morning activities...",
-    "Selecting afternoon experiences...",
-    "Curating evening highlights...",
-    "Adding local food recommendations...",
-    "Finalising your itinerary...",
+    "Running KNN interest matching...",
+    "Scoring cities by cosine similarity...",
+    "Extracting NLP intent from preferences...",
+    "Predicting budget via regression model...",
+    "Ranking matched heritage sites...",
+    "Selecting personalised day activities...",
+    "Curating ML-filtered highlights...",
+    "Finalising your AI itinerary...",
 ]
 
-BUDGET_COST_DEFAULT = {"budget": "Rs.5,000",  "mid": "Rs.15,000",  "luxury": "Rs.30,000"}
+BUDGET_COST_DEFAULT = {"budget": "Rs.3,000",  "mid": "Rs.9,000",  "luxury": "Rs.25,000"}
 
 def get_budget_cost(dest_key, budget_key):
     city = DESTINATION_DATA.get(dest_key, {})
@@ -949,7 +1150,7 @@ STYLES    = [("Walk","Relaxed"), ("Fast","Packed"), ("Focus","Focused"), ("Free"
 DURATIONS = [2, 3, 5, 7, 10]
 
 
-# ── HELPERS 
+# ── HELPERS ──────────────────────────────────────────────────────────────────
 def default_days(city_name):
     return {
         1: {"title": "Arrival & First Monuments",
@@ -963,8 +1164,9 @@ def default_days(city_name):
     }
 
 
-
+# ════════════════════════════════════════════════════════════════════════════
 #  PDF GENERATOR
+# ════════════════════════════════════════════════════════════════════════════
 def generate_pdf(filepath, city_name, tagline, total_days, budget_key,
                  style_name, days_data, n_monuments, start_date, budget_display=None):
     doc = SimpleDocTemplate(
@@ -1015,8 +1217,8 @@ def generate_pdf(filepath, city_name, tagline, total_days, budget_key,
     cost = budget_display or BUDGET_COST_DEFAULT.get(budget_key, "Rs.9,000")
     stats = [(str(total_days),"DAYS"),(str(total_days*3),"EXPERIENCES"),
              (str(n_monuments),"MONUMENTS"),(cost,"EST./DAY")]
-    sd = [[Paragraph(n, ps(f"sn{si}", 7, PDF_GOLD, bold=True, align=TA_CENTER)) for si,(n,_) in enumerate(stats)],
-          [Paragraph(l, ps(f"sl{li}", 7,PDF_TEXT2,align=TA_CENTER)) for li,(n,l) in enumerate(stats)]]
+    sd = [[Paragraph(n, ps(f"sn{si}",14,PDF_GOLD,bold=True,align=TA_CENTER)) for si,(n,_) in enumerate(stats)],
+          [Paragraph(l, ps(f"sl{si}", 7,PDF_TEXT2,align=TA_CENTER)) for si,(_,l) in enumerate(stats)]]
     st = Table(sd, colWidths=[W/4]*4)
     st.setStyle(TableStyle([
         ("BACKGROUND",    (0,0),(-1,-1), PDF_CARD),
@@ -1097,7 +1299,9 @@ def generate_pdf(filepath, city_name, tagline, total_days, budget_key,
     doc.build(story)
 
 
+# ════════════════════════════════════════════════════════════════════════════
 #  HTML SHARE GENERATOR
+# ════════════════════════════════════════════════════════════════════════════
 def generate_share_html(city_name, tagline, total_days, budget_key,
                         style_name, days_data, n_monuments, start_date, budget_display=None):
     period_icons  = {"morning":"Sunrise  7 AM", "afternoon":"Sun  1 PM", "evening":"Moon  6 PM"}
@@ -1206,7 +1410,9 @@ footer{{text-align:center;padding:2rem;color:#6a6055;font-size:11px;border-top:1
     return tmp.name
 
 
+# ════════════════════════════════════════════════════════════════════════════
 #  MAIN APPLICATION
+# ════════════════════════════════════════════════════════════════════════════
 class TravelPlannerApp(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -1225,11 +1431,11 @@ class TravelPlannerApp(tk.Tk):
         self._budget_btns = {}
         self._style_btns  = {}
         self._int_btns    = {}
-        self._current     = None   
+        self._current     = None   # holds last generated itinerary data
 
         self._build_ui()
 
-    # ── UI
+    # ── UI ───────────────────────────────────────────────────────────────────
     def _build_ui(self):
         self._build_hero()
         self._build_main_area()
@@ -1281,7 +1487,7 @@ class TravelPlannerApp(tk.Tk):
             lambda e: self.result_canvas.itemconfig(rw, width=e.width))
         self._build_empty_state(self.result_inner)
 
-    # ── FORM 
+    # ── FORM ─────────────────────────────────────────────────────────────────
     def _build_form(self, parent):
         def section(text):
             tk.Label(parent, text=text, bg=BG2, fg=TEXT3,
@@ -1299,6 +1505,24 @@ class TravelPlannerApp(tk.Tk):
                        selectbackground=BG3, selectforeground=TEXT,
                        bordercolor=BORDER, lightcolor=BORDER, darkcolor=BORDER, arrowcolor=TEXT3)
         sty.map("TCombobox", fieldbackground=[("readonly", BG3)])
+
+        # ── NLP QUERY FIELD (ML Engine 2) ────────────────────────────────────
+        tk.Label(parent, text='NLP: describe your trip (optional)',
+                 bg=BG2, fg=TEXT3, font=("Segoe UI", 8)).pack(anchor="w", pady=(6,2))
+        self._nlp_var = tk.StringVar()
+        nlp_entry = tk.Entry(parent, textvariable=self._nlp_var,
+                             bg=BG3, fg=TEXT2, font=("Segoe UI", 10),
+                             insertbackground=GOLD, bd=0, relief="flat",
+                             highlightthickness=1, highlightbackground=BORDER,
+                             highlightcolor=GOLD)
+        nlp_entry.pack(fill="x", ipady=6)
+        nlp_entry.insert(0, 'e.g. "forts and spicy food near Delhi"')
+        nlp_entry.bind("<FocusIn>",
+            lambda e: nlp_entry.delete(0, "end")
+                      if nlp_entry.get().startswith('e.g.') else None)
+        nlp_entry.bind("<FocusOut>",
+            lambda e: nlp_entry.insert(0, 'e.g. "forts and spicy food near Delhi"')
+                      if not nlp_entry.get().strip() else None)
 
         section("DURATION (DAYS)")
         dr = tk.Frame(parent, bg=BG2)
@@ -1390,7 +1614,7 @@ class TravelPlannerApp(tk.Tk):
         self.gen_btn.bind("<Enter>", lambda e: self.gen_btn.configure(bg=GOLD2))
         self.gen_btn.bind("<Leave>", lambda e: self.gen_btn.configure(bg=GOLD))
 
-    # ── TOGGLES 
+    # ── TOGGLES ──────────────────────────────────────────────────────────────
     def _select_duration(self, val):
         self.selected_duration.set(val)
         for d, btn in self._dur_btns.items():
@@ -1423,7 +1647,7 @@ class TravelPlannerApp(tk.Tk):
             btn.configure(bg=GOLD if v==val else BG3, fg=BG if v==val else TEXT2,
                           highlightbackground=GOLD if v==val else BORDER)
 
-    # ── EMPTY / LOADING 
+    # ── EMPTY / LOADING ───────────────────────────────────────────────────────
     def _build_empty_state(self, parent):
         self._clear_result()
         f = tk.Frame(parent, bg=BG2, bd=1, relief="solid", padx=30, pady=40)
@@ -1460,13 +1684,42 @@ class TravelPlannerApp(tk.Tk):
                                            font=("Segoe UI", 10))
         self._loading_step_lbl.pack()
 
-    # ── GENERATE 
+    # ── GENERATE ─────────────────────────────────────────────────────────────
     def _on_generate(self):
         dest_name = self.dest_var.get()
         if not dest_name or dest_name.startswith("--"):
             messagebox.showwarning("No Destination", "Please select a destination first.")
             return
         dest_key = next((k for n,k in DESTINATIONS_LIST if n==dest_name), "")
+
+        # ── ML ENGINE 2: NLP query parsing (if user typed in the hint field) ──
+        nlp_city    = None
+        nlp_ints    = {}
+        if hasattr(self, "_nlp_var") and self._nlp_var.get().strip():
+            nlp_city, nlp_ints = nlp_parse_query(self._nlp_var.get())
+            # Pre-tick detected interests
+            if nlp_ints:
+                for interest, val in nlp_ints.items():
+                    if interest in self.interests_state:
+                        self.interests_state[interest].set(bool(val))
+                        self._int_btns[interest].configure(
+                            fg=GOLD if val else TEXT2,
+                            highlightbackground=GOLD if val else BORDER)
+            # Override destination if NLP found a city
+            if nlp_city:
+                dest_key = nlp_city
+                matched_name = next((n for n,k in DESTINATIONS_LIST if k==nlp_city), dest_name)
+                dest_name = matched_name
+
+        # ── ML ENGINE 1: KNN recommendation ──────────────────────────────────
+        interest_scores = {i: (1 if self.interests_state[i].get() else 0)
+                           for i in self.interests_state}
+        knn_top3 = knn_recommend(interest_scores, top_n=3)
+        self._knn_suggestion = knn_top3   # store for display in result header
+
+        # If selected city is NOT in top-3, note the best KNN alternative
+        self._knn_best = knn_top3[0] if dest_key not in knn_top3 else None
+
         self.gen_btn.configure(state="disabled", text="  Generating...")
         self._show_loading()
         self.update()
@@ -1488,7 +1741,7 @@ class TravelPlannerApp(tk.Tk):
         self._build_itinerary(dest_key, dest_name)
         self.gen_btn.configure(state="normal", text="Regenerate Itinerary")
 
-    # ── ITINERARY 
+    # ── ITINERARY ─────────────────────────────────────────────────────────────
     def _build_itinerary(self, dest_key, dest_name):
         self._clear_result()
         data       = DESTINATION_DATA.get(dest_key)
@@ -1500,7 +1753,12 @@ class TravelPlannerApp(tk.Tk):
         tagline    = data["tagline"] if data else f"A curated {total_days}-day heritage experience"
         n_mons     = len(data["monuments"]) if data else 6
         start_date = datetime.now() + timedelta(days=7)
-        budget_display = get_budget_cost(dest_key, budget_key)
+
+        # ── ML ENGINE 3: Linear Regression budget prediction ─────────────────
+        ml_budget_display = predict_budget(total_days, budget_key)
+        static_budget     = get_budget_cost(dest_key, budget_key)
+        # Use ML-predicted value as the primary display
+        budget_display = ml_budget_display
 
         # Store for PDF/share
         self._current = dict(city_name=city_name, tagline=tagline,
@@ -1511,6 +1769,46 @@ class TravelPlannerApp(tk.Tk):
 
         container = tk.Frame(self.result_inner, bg=BG)
         container.pack(fill="both", expand=True, padx=4, pady=4)
+
+        # ── ML INSIGHT PANEL ────────────────────────────────────────────────
+        # Show KNN top-3 matches and NLP/budget predictions in a compact bar
+        knn_top3   = getattr(self, "_knn_suggestion", [])
+        knn_best   = getattr(self, "_knn_best", None)
+        knn_names  = [next((n for n,k in DESTINATIONS_LIST if k==c), c.title())
+                      for c in knn_top3]
+
+        ml_panel = tk.Frame(container, bg=BG3, bd=1, relief="solid", padx=14, pady=10)
+        ml_panel.pack(fill="x", pady=(0,6))
+
+        tk.Label(ml_panel, text="AI/ML ANALYSIS", bg=BG3, fg=GOLD,
+                 font=("Segoe UI", 8, "bold")).pack(anchor="w")
+
+        row1 = tk.Frame(ml_panel, bg=BG3)
+        row1.pack(fill="x", pady=(4,0))
+        tk.Label(row1, text="KNN Top Matches:", bg=BG3, fg=TEXT3,
+                 font=("Segoe UI", 8)).pack(side="left")
+        for i, nm in enumerate(knn_names):
+            is_sel = (knn_top3[i] == dest_key) if i < len(knn_top3) else False
+            tk.Label(row1, text=f"  {nm.split(',')[0]}",
+                     bg=BG3, fg=GOLD if is_sel else TEXT2,
+                     font=("Segoe UI", 8, "bold" if is_sel else "normal")).pack(side="left")
+
+        row2 = tk.Frame(ml_panel, bg=BG3)
+        row2.pack(fill="x", pady=(3,0))
+        tk.Label(row2, text="ML Budget (Linear Regression):", bg=BG3, fg=TEXT3,
+                 font=("Segoe UI", 8)).pack(side="left")
+        tk.Label(row2, text=f"  {ml_budget_display}/day",
+                 bg=BG3, fg=GOLD, font=("Segoe UI", 8, "bold")).pack(side="left")
+        tk.Label(row2, text=f"  (static lookup: {static_budget})",
+                 bg=BG3, fg=TEXT3, font=("Segoe UI", 8)).pack(side="left")
+
+        if knn_best:
+            best_name = next((n for n,k in DESTINATIONS_LIST if k==knn_best), knn_best.title())
+            row3 = tk.Frame(ml_panel, bg=BG3)
+            row3.pack(fill="x", pady=(3,0))
+            tk.Label(row3,
+                     text=f"KNN suggests '{best_name.split(',')[0]}' better matches your interests.",
+                     bg=BG3, fg=MORNING, font=("Segoe UI", 8)).pack(anchor="w")
 
         # Header
         hdr = tk.Frame(container, bg=BG2, bd=1, relief="solid", padx=18, pady=16)
@@ -1637,7 +1935,7 @@ class TravelPlannerApp(tk.Tk):
             tk.Label(tr, text=tag, bg=BG3, fg=TEXT3,
                      font=("Segoe UI",8), bd=1, relief="solid", padx=6, pady=2).pack(side="left", padx=2)
 
-    # ── ACTIONS 
+    # ── ACTIONS ──────────────────────────────────────────────────────────────
     def _download_pdf(self):
         if not self._current:
             messagebox.showwarning("No Itinerary", "Please generate an itinerary first.")
@@ -1740,7 +2038,7 @@ class TravelPlannerApp(tk.Tk):
         messagebox.showinfo("Saved", "Itinerary bookmarked!\n(Connect a database to persist saves across sessions.)")
 
 
-# ── ENTRY POINT
+# ── ENTRY POINT ───────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     app = TravelPlannerApp()
     app.mainloop()
