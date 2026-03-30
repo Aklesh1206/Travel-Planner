@@ -1516,7 +1516,7 @@ class TravelPlannerApp(tk.Tk):
                              highlightthickness=1, highlightbackground=BORDER,
                              highlightcolor=GOLD)
         nlp_entry.pack(fill="x", ipady=6)
-        nlp_entry.insert(0, 'e.g. "forts and spicy food near Delhi"')
+        nlp_entry.insert(0, 'Enter place Name')
         nlp_entry.bind("<FocusIn>",
             lambda e: nlp_entry.delete(0, "end")
                       if nlp_entry.get().startswith('e.g.') else None)
