@@ -6,7 +6,7 @@
 ![Tkinter](https://img.shields.io/badge/Tkinter-GUI-FF6F00?style=for-the-badge&logo=python&logoColor=white)
 ![ReportLab](https://img.shields.io/badge/ReportLab-PDF%20Export-CC0000?style=for-the-badge)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=for-the-badge)
-
+[![ML-Inside](https://img.shields.io/badge/AI--Powered-Scikit--Learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
 <br/>
 
 > **A fully offline Python desktop app that generates personalised day-by-day heritage travel itineraries for India — with PDF export and HTML share in one click.**
