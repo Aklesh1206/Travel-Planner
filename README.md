@@ -73,6 +73,9 @@ cd Travel-Planner
 
 ```bash
 pip install reportlab
+pip install scikit-learn
+pip install numpy
+pip install pandas
 ```
 
 >  **Tkinter** is built into Python on Windows and macOS.  
